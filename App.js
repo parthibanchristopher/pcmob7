@@ -7,8 +7,17 @@ import AuthScreen from "./screens/AuthScreen";
 import HomeStack from "./components/HomeStack";
 import { AUTH_SCREEN, HOME_STACK } from "./constants";
 const Stack = createStackNavigator();
-
+import { Provider } from "react-redux";
+import store from "./store";
 export default function App() {
+  return (
+    <Provider store={store}>
+      <AppSource />
+    </Provider>
+  );
+}
+
+function AppSource() {
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
 

@@ -1,4 +1,5 @@
 import {
+    ActivityIndicator,
     FlatList,
     StyleSheet,
     Text,
@@ -6,13 +7,30 @@ import {
     View,
 } from "react-native";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { API_STATUS, NOTES_SCREEN } from "../constants";
+import { fetchPosts } from "../features/notesSlice";
+import { useEffect } from "react";
 
 export default function NotesScreenHome() {
-    const posts = useSelector((state) => state.notes);
+    const posts = useSelector((state) => state.notes.posts);
+    const notesStatus = useSelector((state) => state.notes.status);
+    const isLoading = notesStatus === API_STATUS.pending;
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (notesStatus === API_STATUS.idle) {
+            dispatch(fetchPosts());
+        }
+    }, [notesStatus, dispatch]);
+
+    const navigation = useNavigation();
     function renderItem({ item }) {
         return (
-            <TouchableOpacity style={styles.noteCard} onPress={() => { }}>
+            <TouchableOpacity style={styles.noteCard} onPress={() => {
+                navigation.navigate(NOTES_SCREEN.Details, item)
+            }}>
                 <Text style={styles.noteCardTitle}>{item.title}</Text>
                 <Text style={styles.noteCardBodyText}>
                     {item.content.substring(0, 120)}
@@ -24,6 +42,8 @@ export default function NotesScreenHome() {
         <View style={styles.container}>
             <Text style={styles.title}>notes</Text>
 
+            {isLoading && <ActivityIndicator />}
+
             <FlatList
                 data={posts}
                 renderItem={renderItem}
@@ -31,7 +51,9 @@ export default function NotesScreenHome() {
             />
 
             <View style={{ flex: 1 }} />
-            <TouchableOpacity style={styles.button} onPress={() => { }}>
+            <TouchableOpacity style={styles.button} onPress={() => {
+                navigation.navigate(NOTES_SCREEN.Add);
+            }}>
                 <Text style={styles.buttonText}>Add Note</Text>
             </TouchableOpacity>
         </View>

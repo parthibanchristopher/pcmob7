@@ -22,7 +22,7 @@ export default function NotesScreenDetails() {
     const [entryDate, setEntryDate] = useState(params.date);
     const [entryContent, setEntryContent] = useState(params.content);
     const [entryRatings, setEntryRatings] = useState(params.ratings);
-    const [entryFavourites, setEntryFavourites] = useState(params.favourites);
+    const [entryFavourites, setEntryFavourites] = useState(params.favourite);
     const [editable, setEditable] = useState(false);
     const dispatch = useDispatch();
     const id = params.id;
@@ -36,6 +36,7 @@ export default function NotesScreenDetails() {
                 ratings: entryRatings,
                 favourite: entryFavourites
             };
+            console.log(updatedPost)
             await dispatch(updatePostThunk(updatedPost));
         } catch (error) {
             console.error("Failed to update the post: ", error);
@@ -66,8 +67,8 @@ export default function NotesScreenDetails() {
 
                 <View style={{ flex: 1 }} />
 
-                <TouchableOpacity style={{ marginLeft: 15 }}>
-                    <FontAwesome name={"star"} size={24} color={"orange"} />
+                <TouchableOpacity onPress={() => { setEntryFavourites(!entryFavourites); }} style={{ marginLeft: 15 }}>
+                    <FontAwesome name={"star"} size={24} color={entryFavourites ? "orange" : "grey"} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -108,18 +109,6 @@ export default function NotesScreenDetails() {
                     placeholder={"Entry Rating"}
                     value={entryRatings}
                     onChangeText={(text) => setEntryRatings(text)}
-                    selectionColor={"gray"}
-                    editable={editable}
-                    multiline={true}
-                />
-            </View>
-            <View style={styles.entryDetails}>
-                <Text>Favourite: </Text>
-                <TextInput
-                    style={styles.noteBody}
-                    placeholder={"Favourite"}
-                    value={entryFavourites}
-                    onChangeText={(text) => setEntryFavourites(text)}
                     selectionColor={"gray"}
                     editable={editable}
                     multiline={true}

@@ -11,7 +11,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { API_STATUS, NOTES_SCREEN } from "../constants";
 import { fetchPosts } from "../features/notesSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function FavouriteScreenHome() {
     const posts = useSelector((state) => state.notes.posts);
@@ -25,22 +26,43 @@ export default function FavouriteScreenHome() {
         }
     }, [notesStatus, dispatch]);
 
+    const [userID, setUserID] = useState("");
+
+    async function loadUserID() {
+        const user = await AsyncStorage.getItem("token");
+        try {
+            setUserID(user);
+        } catch (error) {
+            console.log(error.response.data);
+        }
+    }
+
+    useEffect(() => {
+        const removeListener = navigation.addListener("focus", loadUserID);
+        loadUserID();
+        return () => {
+            removeListener();
+        };
+    }, []);
+
     const navigation = useNavigation();
     function renderItem({ item }) {
-        if (item.favourite == "Yes") {
-            return (
-                <TouchableOpacity style={styles.noteCard} onPress={() => {
-                    navigation.navigate(NOTES_SCREEN.Details, item)
-                }}>
-                    <Text style={styles.noteCardTitle}>{item.title}</Text>
+        if (userID == item.userid) {
+            if (item.favourite == true) {
+                return (
+                    <TouchableOpacity style={styles.noteCard} onPress={() => {
+                        navigation.navigate(NOTES_SCREEN.Details, item)
+                    }}>
+                        <Text style={styles.noteCardTitle}>{item.title}</Text>
 
-                    <Text style={styles.noteCardBodyText}>
-                        {item.content.substring(0, 100) + "..."}
-                    </Text>
+                        <Text style={styles.noteCardBodyText}>
+                            {item.content.substring(0, 100) + "..."}
+                        </Text>
 
-                    <Text style={styles.noteCardRatingText}>{"Ratings: " + item.ratings}</Text>
-                </TouchableOpacity>
-            );
+                        <Text style={styles.noteCardRatingText}>{"Ratings: " + item.ratings}</Text>
+                    </TouchableOpacity>
+                );
+            }
         }
     }
     return (

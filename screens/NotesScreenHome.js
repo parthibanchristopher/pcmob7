@@ -45,6 +45,8 @@ export default function NotesScreenHome() {
         };
     }, []);
 
+
+
     const navigation = useNavigation();
     function renderItem({ item }) {
         if (userID == item.userid) {

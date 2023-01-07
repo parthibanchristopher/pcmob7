@@ -20,10 +20,10 @@ export default function NotesScreenAdd() {
     const [entryTitle, setEntryTitle] = useState("");
     const [entryContent, setEntryContent] = useState("");
     const [entryRatings, setEntryRatings] = useState("");
-    const [entryFavourites, setEntryFavourites] = useState("");
+    //const [entryFavourites, setEntryFavourites] = useState(false);
     const dispatch = useDispatch();
 
-    const currentDate = new Date().getDate();
+    //const currentDate = new Date().getDate();
 
     const canSave = [entryTitle, entryContent].every(Boolean);
 
@@ -53,10 +53,10 @@ export default function NotesScreenAdd() {
                     id: nanoid(),
                     userid: userID,
                     title: entryTitle,
-                    date: currentDate,
+                    date: "Today",
                     content: entryContent,
                     ratings: entryRatings,
-                    favourite: entryFavourites
+                    favourite: false
                 };
                 await dispatch(addNewPost(post));
             } catch (error) {
@@ -97,13 +97,13 @@ export default function NotesScreenAdd() {
                 onChangeText={(text) => setEntryRatings(text)}
                 selectionColor={"gray"}
             />
-            <TextInput
+            {/*<TextInput
                 style={styles.noteBody}
                 placeholder={"Add to favourites? Yes/No"}
                 value={entryFavourites}
                 onChangeText={(text) => setEntryFavourites(text)}
                 selectionColor={"gray"}
-            />
+    />*/}
             <View style={{ flex: 1 }} />
             <TouchableOpacity style={styles.button} onPress={
                 async () => await savePost()

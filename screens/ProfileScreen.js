@@ -10,12 +10,9 @@ export default function ProfileScreen() {
     const [username, setUsername] = useState("loading...");
 
     async function loadUsername() {
-        const token = await AsyncStorage.getItem("token");
+        const user = await AsyncStorage.getItem("user");
         try {
-            const response = await axios.get(API + API_WHOAMI, {
-                headers: { Authorization: `JWT ${token}` },
-            });
-            setUsername(response.data.username);
+            setUsername(user);
         } catch (error) {
             console.log(error.response.data);
         }
@@ -40,6 +37,7 @@ export default function ProfileScreen() {
                 style={styles.button}
                 onPress={() => {
                     navigation.navigate(AUTH_SCREEN);
+                    AsyncStorage.removeItem("user");
                     AsyncStorage.removeItem("token");
                     setUsername("loading...");
                 }}

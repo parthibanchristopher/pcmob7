@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
@@ -13,22 +13,50 @@ import {
 import { nanoid } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { addNewPost } from "../features/notesSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function NotesScreenAdd() {
     const navigation = useNavigation();
-    const [noteTitle, setNoteTitle] = useState("");
-    const [noteBody, setNoteBody] = useState("");
+    const [entryTitle, setEntryTitle] = useState("");
+    const [entryContent, setEntryContent] = useState("");
+    const [entryRatings, setEntryRatings] = useState("");
+    const [entryFavourites, setEntryFavourites] = useState("");
     const dispatch = useDispatch();
 
-    const canSave = [noteTitle, noteBody].every(Boolean);
+    const currentDate = new Date().getDate();
+
+    const canSave = [entryTitle, entryContent].every(Boolean);
+
+    const [userID, setUserID] = useState("");
+
+    async function loadUserID() {
+        const user = await AsyncStorage.getItem("token");
+        try {
+            setUserID(user);
+        } catch (error) {
+            console.log(error.response.data);
+        }
+    }
+
+    useEffect(() => {
+        const removeListener = navigation.addListener("focus", loadUserID);
+        loadUserID();
+        return () => {
+            removeListener();
+        };
+    }, []);
 
     async function savePost() {
         if (canSave) {
             try {
                 const post = {
                     id: nanoid(),
-                    title: noteTitle,
-                    content: noteBody,
+                    userid: userID,
+                    title: entryTitle,
+                    date: currentDate,
+                    content: entryContent,
+                    ratings: entryRatings,
+                    favourite: entryFavourites
                 };
                 await dispatch(addNewPost(post));
             } catch (error) {
@@ -50,17 +78,31 @@ export default function NotesScreenAdd() {
             <TextInput
                 style={styles.noteTitle}
                 placeholder={"note title"}
-                value={noteTitle}
-                onChangeText={(text) => setNoteTitle(text)}
+                value={entryTitle}
+                onChangeText={(text) => setEntryTitle(text)}
                 selectionColor={"gray"}
             />
             <TextInput
                 style={styles.noteBody}
                 placeholder={"Add your notes"}
-                value={noteBody}
-                onChangeText={(text) => setNoteBody(text)}
+                value={entryContent}
+                onChangeText={(text) => setEntryContent(text)}
                 selectionColor={"gray"}
                 multiline={true}
+            />
+            <TextInput
+                style={styles.noteBody}
+                placeholder={"Add your ratings eg: 4/5"}
+                value={entryRatings}
+                onChangeText={(text) => setEntryRatings(text)}
+                selectionColor={"gray"}
+            />
+            <TextInput
+                style={styles.noteBody}
+                placeholder={"Add to favourites? Yes/No"}
+                value={entryFavourites}
+                onChangeText={(text) => setEntryFavourites(text)}
+                selectionColor={"gray"}
             />
             <View style={{ flex: 1 }} />
             <TouchableOpacity style={styles.button} onPress={
@@ -88,6 +130,7 @@ const styles = StyleSheet.create({
     noteBody: {
         fontSize: 15,
         fontWeight: "400",
+        paddingBottom: 20
     },
     button: {
         backgroundColor: "black",

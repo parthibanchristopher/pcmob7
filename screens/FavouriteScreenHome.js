@@ -11,10 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { API_STATUS, NOTES_SCREEN } from "../constants";
 import { fetchPosts } from "../features/notesSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-export default function NotesScreenHome() {
+export default function FavouriteScreenHome() {
     const posts = useSelector((state) => state.notes.posts);
     const notesStatus = useSelector((state) => state.notes.status);
     const isLoading = notesStatus === API_STATUS.pending;
@@ -26,28 +25,9 @@ export default function NotesScreenHome() {
         }
     }, [notesStatus, dispatch]);
 
-    const [userID, setUserID] = useState("");
-
-    async function loadUserID() {
-        const user = await AsyncStorage.getItem("token");
-        try {
-            setUserID(user);
-        } catch (error) {
-            console.log(error.response.data);
-        }
-    }
-
-    useEffect(() => {
-        const removeListener = navigation.addListener("focus", loadUserID);
-        loadUserID();
-        return () => {
-            removeListener();
-        };
-    }, []);
-
     const navigation = useNavigation();
     function renderItem({ item }) {
-        if (userID == item.userid) {
+        if (item.favourite == "Yes") {
             return (
                 <TouchableOpacity style={styles.noteCard} onPress={() => {
                     navigation.navigate(NOTES_SCREEN.Details, item)
@@ -62,11 +42,10 @@ export default function NotesScreenHome() {
                 </TouchableOpacity>
             );
         }
-
     }
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Past Food Entries</Text>
+            <Text style={styles.title}>Favourite Entries</Text>
 
             {isLoading && <ActivityIndicator />}
 

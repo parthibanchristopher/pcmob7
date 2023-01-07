@@ -18,8 +18,11 @@ export default function NotesScreenDetails() {
     const titleInputRef = useRef();
     const navigation = useNavigation();
     const params = route.params;
-    const [noteTitle, setNoteTitle] = useState(params.title);
-    const [noteBody, setNoteBody] = useState(params.content);
+    const [entryTitle, setEntryTitle] = useState(params.title);
+    const [entryDate, setEntryDate] = useState(params.date);
+    const [entryContent, setEntryContent] = useState(params.content);
+    const [entryRatings, setEntryRatings] = useState(params.ratings);
+    const [entryFavourites, setEntryFavourites] = useState(params.favourites);
     const [editable, setEditable] = useState(false);
     const dispatch = useDispatch();
     const id = params.id;
@@ -28,8 +31,10 @@ export default function NotesScreenDetails() {
         try {
             const updatedPost = {
                 id,
-                title: noteTitle,
-                content: noteBody,
+                title: entryTitle,
+                content: entryContent,
+                ratings: entryRatings,
+                favourite: entryFavourites
             };
             await dispatch(updatePostThunk(updatedPost));
         } catch (error) {
@@ -61,6 +66,10 @@ export default function NotesScreenDetails() {
 
                 <View style={{ flex: 1 }} />
 
+                <TouchableOpacity style={{ marginLeft: 15 }}>
+                    <FontAwesome name={"star"} size={24} color={"orange"} />
+                </TouchableOpacity>
+
                 <TouchableOpacity
                     onPress={() => {
                         setEditable(!editable);
@@ -70,6 +79,7 @@ export default function NotesScreenDetails() {
                             setTimeout(() => titleInputRef.current.blur(), 100);
                         }
                     }}
+                    style={{ marginLeft: 15 }}
                 >
                     <FontAwesome
                         name={"pencil"}
@@ -84,22 +94,62 @@ export default function NotesScreenDetails() {
             </View>
             <TextInput
                 style={styles.noteTitle}
-                placeholder={"note title"}
-                value={noteTitle}
-                onChangeText={(text) => setNoteTitle(text)}
+                placeholder={"Entry Title"}
+                value={entryTitle}
+                onChangeText={(text) => setEntryTitle(text)}
                 selectionColor={"gray"}
                 editable={editable}
                 ref={titleInputRef}
             />
-            <TextInput
-                style={styles.noteBody}
-                placeholder={"Add your notes"}
-                value={noteBody}
-                onChangeText={(text) => setNoteBody(text)}
-                selectionColor={"gray"}
-                editable={editable}
-                multiline={true}
-            />
+            <View style={styles.entryDetails}>
+                <Text>Ratings: </Text>
+                <TextInput
+                    style={styles.noteBody}
+                    placeholder={"Entry Rating"}
+                    value={entryRatings}
+                    onChangeText={(text) => setEntryRatings(text)}
+                    selectionColor={"gray"}
+                    editable={editable}
+                    multiline={true}
+                />
+            </View>
+            <View style={styles.entryDetails}>
+                <Text>Favourite: </Text>
+                <TextInput
+                    style={styles.noteBody}
+                    placeholder={"Favourite"}
+                    value={entryFavourites}
+                    onChangeText={(text) => setEntryFavourites(text)}
+                    selectionColor={"gray"}
+                    editable={editable}
+                    multiline={true}
+                />
+            </View>
+            <View style={styles.entryDetails}>
+                <Text>Date: </Text>
+                <TextInput
+                    style={styles.noteBody}
+                    placeholder={"Entry Date"}
+                    value={entryDate}
+                    onChangeText={(text) => setEntryDate(text)}
+                    selectionColor={"gray"}
+                    editable={false}
+                    multiline={true}
+                />
+            </View>
+            <View style={styles.entryDetails}>
+                <Text>Details: </Text>
+                <TextInput
+                    style={styles.noteBody}
+                    placeholder={"Entry Details"}
+                    value={entryContent}
+                    onChangeText={(text) => setEntryContent(text)}
+                    selectionColor={"gray"}
+                    editable={editable}
+                    multiline={true}
+                />
+            </View>
+
             <View style={{ flex: 1 }} />
             <TouchableOpacity style={styles.button} onPress={
                 async () => updatePost(id)
@@ -121,6 +171,10 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         marginTop: 30,
         marginBottom: 25,
+    },
+    entryDetails: {
+        paddingTop: 10,
+        paddingBottom: 10
     },
     noteBody: {
         fontSize: 15,

@@ -12,6 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { HOME_STACK, API, API_LOGIN, API_SIGNUP } from "../constants";
+//import { get } from "../firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 
 export default function AuthScreen() {
@@ -22,6 +24,8 @@ export default function AuthScreen() {
     const [loading, setLoading] = useState(false);
     const [isLoginScreen, setIsLoginScreen] = useState(true);
     const [confirmPassword, setConfirmPassword] = useState("");
+
+    const auth = getAuth();
 
     useEffect(() => {
         return () => setLoading(false);
@@ -50,7 +54,7 @@ export default function AuthScreen() {
         }
     }
 
-    async function login() {
+    /*async function login() {
         setErrorText("");
         setLoading(true);
         Keyboard.dismiss();
@@ -66,7 +70,24 @@ export default function AuthScreen() {
             setErrorText(error.response.data.description);
         }
         setLoading(false);
+    }*/
+
+    async function login() {
+        setErrorText("");
+        setLoading(true);
+        Keyboard.dismiss();
+        try {
+            await signInWithEmailAndPassword(auth, username, password)
+            await AsyncStorage.setItem("user", auth.currentUser.email);
+            await AsyncStorage.setItem("token", auth.currentUser.uid);
+            navigation.navigate(HOME_STACK);
+        } catch (error) {
+            console.log(error);
+            setErrorText(error.message);
+        }
+        setLoading(false);
     }
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>

@@ -11,11 +11,17 @@ export const AUTH_SCREEN = "AUTH_SCREEN"
 export const PROFILE_SCREEN = "PROFILE_SCREEN"
 export const HOME_STACK = "HOME_STACK";
 export const NOTES_STACK = "NOTES_STACK";
+export const FAVOURITES_STACK = "FAVOURITES_STACK";
 
 export const NOTES_SCREEN = {
     Home: "NotesScreenHome",
     Details: "NotesScreenDetails",
     Add: "NotesScreenAdd",
+};
+export const FAVOURITES_SCREEN = {
+    Home: "FavouritesScreenHome",
+    Details: "FavouritesScreenDetails",
+    Add: "FavouritesScreenAdd",
 };
 
 export const API_STATUS = {

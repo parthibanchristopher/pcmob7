@@ -84,7 +84,6 @@ const notesSlice = createSlice({
                 const updatedPosts = state.posts.filter((item) => item.id !== id);
                 state.posts = updatedPosts;
             });
-
     },
 });
 
